@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An interactive Dungeon Loot Splitter for adventuring parties.">
+    <title>Dungeon Loot Splitter</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Dungeon Loot Splitter</h1>
+    </header>
+
+    <main id="app-container">
+        <div id="ui-messages" class="message-box hidden" aria-live="polite"></div>
+
+        <section class="panel">
+            <h2>Party Setup</h2>
+            <div class="form-group">
+                <label for="party-size-input">Number of Party Members:</label>
+                <input type="number" id="party-size-input" min="1" step="1" placeholder="e.g., 4" required>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Add Loot</h2>
+            <div class="form-group">
+                <label for="loot-name-input">Loot Name:</label>
+                <input type="text" id="loot-name-input" placeholder="e.g., Gold Ring" required>
+            </div>
+            <div class="form-group">
+                <label for="loot-value-input">Loot Value:</label>
+                <input type="number" id="loot-value-input" min="0" step="0.01" placeholder="e.g., 50.00" required>
+            </div>
+            <div class="form-group">
+                <label for="loot-quantity-input">Quantity:</label>
+                <input type="number" id="loot-quantity-input" min="1" step="1" placeholder="e.g., 1" required>
+            </div>
+            <button id="add-loot-btn">Add Loot</button>
+        </section>
+
+        <section class="panel">
+            <h2>Loot List</h2>
+            
+            <div id="noLootMessage">No loot added.</div>
+
+            <div class="loot-table hidden">
+                <div class="loot-header">Name</div>
+                <div class="loot-header">Value</div>
+                <div class="loot-header">Quantity</div>
+                <div class="loot-header">Remove</div>
+                
+                <div id="lootRows"></div>
+            </div>
+
+            <div class="total-row">
+                <strong>Total Loot: $<span id="running-total-display">0.00</span></strong>
+            </div>
+        </section>
+
+        <section class="panel split-panel">
+            <h2>Split Loot</h2>
+            <button id="split-loot-btn" disabled>Split Loot</button>
+            
+            <div id="split-results-area" class="results-box hidden">
+                <p><strong>Total Loot:</strong> $<span id="final-total-display">0.00</span></p>
+                <p><strong>Loot Per Party Member:</strong> $<span id="split-amount-display">0.00</span></p>
+            </div>
+        </section>
+
+        <section class="panel reflection">
+            <h2>Logic Explanation</h2>
+            <p>
+                <strong>Source of Truth:</strong> I use my array as the single source of truth. The interface does not store the data; it only reflects what is currently saved in the array.
+            </p>
+            <p>
+                <strong>Data Model:</strong> I added a <code>quantity</code> property to my plain object literal. This allows the system to group multiples of the same item, and my loop calculates the total by multiplying the value by the quantity.
+            </p>
+            <p>
+                <strong>Reactive Rendering:</strong> I created a central <code>updateUI()</code> function that handles all calculations and rendering. Every time the array is modified or the party size changes, <code>updateUI()</code> clears the old display and renders the current state.
+            </p>
+            <p>
+                <strong>State & Logic:</strong> I use conditional logic to protect state integrity by validating inputs before they enter the array. I also use it to enable or disable the Split Loot button based on whether the current state is valid.
+            </p>
+        </section>
+
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

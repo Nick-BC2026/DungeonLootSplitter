@@ -1,0 +1,182 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #f4f4f9;
+    color: #333;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.panel {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+h2 {
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 5px;
+}
+
+/* Forces the labels to stay stacked neatly above inputs */
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+button:hover:not(:disabled) {
+    background-color: #219150;
+}
+
+/* Grays out the split button when state is invalid */
+button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Phase 2: Grid Table Requirements */
+#noLootMessage {
+    font-style: italic;
+    color: #7f8c8d;
+    margin-bottom: 10px;
+}
+
+#lootRows {
+    display: contents;
+}
+
+.loot-table {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.loot-header {
+    font-weight: 600;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 0.25rem;
+}
+
+.loot-row {
+    display: contents;
+}
+
+.loot-cell {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+/* Makes the new remove button fit nicely inside the grid cell */
+.loot-cell button {
+    background-color: #e74c3c;
+    width: 100%;
+    padding: 5px;
+    font-size: 0.9rem;
+}
+
+.loot-cell button:hover {
+    background-color: #c0392b;
+}
+
+.total-row {
+    font-weight: bold;
+    background: #e8f8f5;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.total-box, .results-box {
+    background: #e8f8f5;
+    padding: 15px;
+    border-radius: 4px;
+    border-left: 5px solid #27ae60;
+    margin-top: 15px;
+}
+
+.message-box {
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.message-box.error {
+    background-color: #fce4e4;
+    color: #c0392b;
+    border: 1px solid #c0392b;
+}
+
+/* Used by JS to dynamically hide empty states and results */
+.hidden {
+    display: none !important;
+}
+
+.split-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Switches to two-column grid on larger screens */
+@media (min-width: 768px) {
+    main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #ui-messages, .reflection {
+        grid-column: span 2;
+    }
+}
