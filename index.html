@@ -22,6 +22,7 @@
                 <label for="party-size-input">Number of Party Members:</label>
                 <input type="number" id="party-size-input" min="1" step="1" placeholder="e.g., 4" required>
             </div>
+            <button id="reset-all-btn" class="secondary-btn">Reset All Data</button>
         </section>
 
         <section class="panel">
@@ -71,18 +72,21 @@
         </section>
 
         <section class="panel reflection">
-            <h2>Logic Explanation</h2>
+            <h2>Phase 3 Reflection</h2>
             <p>
-                <strong>Source of Truth:</strong> I use my array as the single source of truth. The interface does not store the data; it only reflects what is currently saved in the array.
+                <strong>Persistence Lifecycle:</strong> Data is grouped into an object, turned into a text string, and saved to the browser. On page load, the string is loaded, turned back into an object, and checked for errors before being used.
             </p>
             <p>
-                <strong>Data Model:</strong> I added a <code>quantity</code> property to my plain object literal. This allows the system to group multiples of the same item, and my loop calculates the total by multiplying the value by the quantity.
+                <strong>The Role of updateUI():</strong> The updateUI() function must run after loading saved data to make the screen match the background data.
             </p>
             <p>
-                <strong>Reactive Rendering:</strong> I created a central <code>updateUI()</code> function that handles all calculations and rendering. Every time the array is modified or the party size changes, <code>updateUI()</code> clears the old display and renders the current state.
+                <strong>JSON Concepts:</strong> JSON.stringify() turns JavaScript objects into text. JSON.parse() turns text back into JavaScript objects.
             </p>
             <p>
-                <strong>State & Logic:</strong> I use conditional logic to protect state integrity by validating inputs before they enter the array. I also use it to enable or disable the Split Loot button based on whether the current state is valid.
+                <strong>Debugging Observation:</strong> When setting a pause point inside the restore function, the loaded data paused in memory. The data was inspected to make sure the values were valid before the screen updated.
+            </p>
+            <p>
+                <strong>Course Outcomes:</strong> This phase supports the goal of creating applications that save user input by keeping data after a page refresh and adding a reset button.
             </p>
         </section>
 
