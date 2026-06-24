@@ -42,7 +42,6 @@ h2 {
     padding-bottom: 5px;
 }
 
-/* Forces the labels to stay stacked neatly above inputs */
 .form-group {
     margin-bottom: 15px;
     display: flex;
@@ -78,14 +77,12 @@ button:hover:not(:disabled) {
     background-color: #219150;
 }
 
-/* Grays out the split button when state is invalid */
 button:disabled {
     background-color: #95a5a6;
     cursor: not-allowed;
     opacity: 0.7;
 }
 
-/* Phase 2: Grid Table Requirements */
 #noLootMessage {
     font-style: italic;
     color: #7f8c8d;
@@ -119,7 +116,6 @@ button:disabled {
     border-bottom: 1px solid #ecf0f1;
 }
 
-/* Makes the new remove button fit nicely inside the grid cell */
 .loot-cell button {
     background-color: #e74c3c;
     width: 100%;
@@ -159,7 +155,6 @@ button:disabled {
     border: 1px solid #c0392b;
 }
 
-/* Used by JS to dynamically hide empty states and results */
 .hidden {
     display: none !important;
 }
@@ -169,7 +164,6 @@ button:disabled {
     flex-direction: column;
 }
 
-/* Switches to two-column grid on larger screens */
 @media (min-width: 768px) {
     main {
         display: grid;
@@ -179,4 +173,16 @@ button:disabled {
     #ui-messages, .reflection {
         grid-column: span 2;
     }
+}
+
+.secondary-btn {
+    background-color: transparent;
+    color: #e74c3c;
+    border: 2px solid #e74c3c;
+    margin-top: 10px;
+}
+
+.secondary-btn:hover {
+    background-color: #fce4e4;
+    color: #c0392b;
 }
