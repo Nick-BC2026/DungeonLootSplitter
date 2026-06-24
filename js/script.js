@@ -1,7 +1,67 @@
-// Array stores the current state of all items
-let lootArray = [];
+// Placed at the top so it is available to all functions and prevents typos
+const STORAGE_KEY = "lootSplitterState";
 
-// Shows error messages in the UI instead of using popups
+// Global variables act as the single source of truth for the app state
+let lootArray = [];
+let partySize = 1;
+
+// Converts the state object to a string and saves it to localStorage
+function saveState() {
+    const stateObj = {
+        loot: lootArray,
+        partySize: partySize
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stateObj));
+}
+
+// Runs on page load. Pulls the string from storage, safely parses it, 
+// and rigorously validates the data before updating live variables.
+function restoreState() {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    
+    if (savedData) {
+        try {
+            const parsed = JSON.parse(savedData);
+            
+            if (parsed.partySize && typeof parsed.partySize === 'number' && parsed.partySize >= 1) {
+                partySize = parsed.partySize;
+                document.getElementById('party-size-input').value = partySize;
+            }
+
+            if (Array.isArray(parsed.loot)) {
+                lootArray = []; 
+                for (let i = 0; i < parsed.loot.length; i++) {
+                    let item = parsed.loot[i];
+                    
+                    if (item.name && item.name.trim() !== "" &&
+                        typeof item.value === 'number' && item.value >= 0 &&
+                        typeof item.quantity === 'number' && item.quantity >= 1) {
+                        
+                        lootArray.push(item);
+                    }
+                }
+            }
+        } catch (error) {
+            // Safely falls back to empty defaults if the saved data is corrupted
+            lootArray = [];
+            partySize = 1;
+        }
+    } else {
+        document.getElementById('party-size-input').value = partySize;
+    }
+}
+
+// Clears active memory and saved storage, then refreshes the UI
+function resetAll() {
+    lootArray = [];
+    partySize = 1;
+    document.getElementById('party-size-input').value = partySize;
+    
+    localStorage.removeItem(STORAGE_KEY);
+    clearMessages();
+    updateUI();
+}
+
 function displayMessage(message) {
     const messageBox = document.getElementById('ui-messages');
     messageBox.textContent = message;
@@ -9,7 +69,6 @@ function displayMessage(message) {
     messageBox.classList.add('error');
 }
 
-// Clears existing errors before new actions run
 function clearMessages() {
     const messageBox = document.getElementById('ui-messages');
     messageBox.textContent = '';
@@ -17,6 +76,7 @@ function clearMessages() {
     messageBox.classList.remove('error');
 }
 
+// Validates inputs to protect state. If valid, adds the item, saves, and updates.
 function addLoot() {
     clearMessages();
     
@@ -28,7 +88,6 @@ function addLoot() {
     const value = parseFloat(valueInput.value);
     const quantity = parseInt(quantityInput.value, 10);
 
-    // Stop execution if inputs are empty or mathematically invalid
     if (name === "") {
         displayMessage("Loot Name cannot be empty.");
         return; 
@@ -42,30 +101,36 @@ function addLoot() {
         return;
     }
 
-    // Bundle the item data together
-    const lootItem = {
-        name: name,
-        value: value,
-        quantity: quantity
-    };
+    const lootItem = { name: name, value: value, quantity: quantity };
 
     lootArray.push(lootItem);
+    saveState();
 
     nameInput.value = "";
     valueInput.value = "";
     quantityInput.value = "";
 
-    // Refresh the screen to show the new item
     updateUI();
 }
 
+// Removes the specific item from the array, saves the new state, and updates the screen
 function removeLoot(index) {
-    // Delete the specific item from the array
     lootArray.splice(index, 1);
+    saveState();
     updateUI();
 }
 
-// Central function that handles all math, rendering, and logic checks
+// Updates the party size in memory and storage whenever a valid number is typed
+function handlePartySizeChange(e) {
+    const newSize = parseInt(e.target.value, 10);
+    if (!isNaN(newSize) && newSize >= 1) {
+        partySize = newSize;
+        saveState();
+    }
+    updateUI();
+}
+
+// Central function that handles all math and DOM updates based on the current state
 function updateUI() {
     const lootRows = document.getElementById('lootRows');
     const noLootMessage = document.getElementById('noLootMessage');
@@ -73,15 +138,11 @@ function updateUI() {
     const splitBtn = document.getElementById('split-loot-btn');
     const splitResultsArea = document.getElementById('split-results-area');
     
-    const partySizeInput = document.getElementById('party-size-input');
-    const partySize = parseInt(partySizeInput.value, 10);
-
-    // Wipe the display to prevent duplicates
     lootRows.innerHTML = "";
-    
     let currentTotal = 0;
 
-    // Build the HTML list and add up the total value
+    // 1. Calculate totals
+    // 2. Render loot list
     for (let i = 0; i < lootArray.length; i++) {
         let row = document.createElement("div");
         row.className = "loot-row";
@@ -112,7 +173,6 @@ function updateUI() {
         row.appendChild(valueCell);
         row.appendChild(quantityCell);
         row.appendChild(actionCell);
-
         lootRows.appendChild(row);
         
         currentTotal += (lootArray[i].value * lootArray[i].quantity);
@@ -124,7 +184,7 @@ function updateUI() {
     let isPartyValid = !isNaN(partySize) && partySize >= 1;
     let hasLoot = lootArray.length > 0;
 
-    // Show or hide the empty state message
+    // 5. Show/hide results (Empty State logic)
     if (hasLoot) {
         noLootMessage.classList.add('hidden');
         document.querySelector('.loot-table').classList.remove('hidden');
@@ -133,7 +193,8 @@ function updateUI() {
         document.querySelector('.loot-table').classList.add('hidden');
     }
 
-    // Lock the split button if the state is invalid, otherwise calculate the split
+    // 3. Calculate split
+    // 4. Enable/disable Split button
     if (hasLoot && isPartyValid) {
         splitBtn.disabled = false;
         let splitAmount = currentTotal / partySize;
@@ -144,16 +205,20 @@ function updateUI() {
     }
 }
 
+// Simply reveals the results panel since updateUI already completed the math
 function splitLoot() {
     clearMessages();
-    // Reveal the results panel (math is already done by updateUI)
     document.getElementById('split-results-area').classList.remove('hidden');
 }
 
+// Binds all interactions to their respective elements
 document.getElementById('add-loot-btn').addEventListener('click', addLoot);
 document.getElementById('split-loot-btn').addEventListener('click', splitLoot);
-// Automatically update math when the party size changes
-document.getElementById('party-size-input').addEventListener('input', updateUI);
+document.getElementById('party-size-input').addEventListener('input', handlePartySizeChange);
+document.getElementById('reset-all-btn').addEventListener('click', resetAll);
 
-// Run once on load to set up the default hidden states
-updateUI();
+// Ensures the HTML is fully loaded before attempting to restore state or update the screen
+document.addEventListener('DOMContentLoaded', function() {
+    restoreState();
+    updateUI();
+});
